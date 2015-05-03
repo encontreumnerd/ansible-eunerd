@@ -1,1 +1,4 @@
 credentials/*
+hosts
+staging
+group_vars
