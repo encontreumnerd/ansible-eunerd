@@ -5,22 +5,52 @@
   gather_facts: True
   sudo: True
 
-  # tasks:
-  #   - include: provision.yml
+  roles:
+    - { role: geerlingguy.security, tags: security }
+    - { role: nickjj.fail2ban, sudo: true, tags: fail2ban }
+    - { role: DavidWittman.redis, tags: redis }
+    - { role: nickhammond.logrotate, tags: logrotate }
+    - { role: geerlingguy.java, tags: java }
+    - { role: geerlingguy.elasticsearch, tags: elasticsearch }
+    - { role: franklinkim.openssl, tags: openssl }
+    - { role: franklinkim.nginx, tags: nginx }
+    - { role: franklinkim.nodejs, tags: nodejs }
 
-# - name: ensure bitbucket.org is a known host
-#   lineinfile:
-#     dest: /root/.ssh/known_hosts
-#     create: yes
-#     state: present
-#     line: "{{ lookup('pipe', 'ssh-keyscan -t rsa bitbucket.org') }}"
-#     regexp: "^bitbucket\\.org"
 
-# - name: ensure postgresql hstore extension is created
-#   sudo: yes
-#   sudo_user: postgres
-#   shell: "psql my_database -c 'CREATE EXTENSION hstore;'"
-#   register: psql_result
-#   failed_when: >
-#     psql_result.rc != 0 and ("already exists" not in psql_result.stderr)
-#   changed_when: "psql_result.rc == 0"
+  tasks:
+    - name: fix locales
+      shell: >
+        locale-gen en_US.UTF-8 && dpkg-reconfigure -fnoninteractive locales && update-locale LC_ALL="en_US.UTF-8" LANG="en_US.UTF-8" LANGUAGE="en_US" && touch ~/.locale_ok creates=~/.locale_ok
+
+    - name: update apt cache
+      apt: update_cache=yes
+
+    - name: upgrade system
+      apt: upgrade=safe
+
+    - name: install required packages
+      apt: pkg={{ item }}
+      with_items:
+        - build-essential
+        - git-core
+        - libxml2-dev
+        - python-psycopg2
+        - libpq-dev
+        - imagemagick
+
+    - name: ensure bitbucket.org is a known host
+      lineinfile:
+        dest: /root/.ssh/known_hosts
+        create: yes
+        state: present
+        line: "{{ lookup('pipe', 'ssh-keyscan -t rsa bitbucket.org') }}"
+        regexp: "^bitbucket\\.org"
+
+    # - name: ensure postgresql hstore extension is created
+    #   sudo: yes
+    #   sudo_user: postgres
+    #   shell: "psql my_database -c 'CREATE EXTENSION hstore;'"
+    #   register: psql_result
+    #   failed_when: >
+    #     psql_result.rc != 0 and ("already exists" not in psql_result.stderr)
+    #   changed_when: "psql_result.rc == 0"
