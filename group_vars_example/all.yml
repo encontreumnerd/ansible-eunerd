@@ -1,0 +1,54 @@
+---
+fail2ban_services:
+  - name: ssh
+    port: ssh
+    filter: sshd
+    logpath: /var/log/auth.log
+security_sudoers_passwordless: [ubuntu]
+redis_bind: 127.0.0.1
+
+apt_repositories:
+  - 'ppa:nginx/stable'
+
+timezone: 'America/Sao_Paulo'
+
+deploy_user: ubuntu
+
+users:
+  - name: Nerd Master
+    username: ubuntu
+    groups: ["adm", "www-data", "sudo", "admin"]
+    ssh_key: "-----BEGIN RSA PRIVATE KEY-----
+IxP2hW+YAss1uldwP7JDbWdBUi0ZuN+3ybJ72I2WnHeiGCxN13Y=
+-----END RSA PRIVATE KEY-----"
+    oh_my_zsh:
+      theme: dallas
+
+ufw_rules:
+  - { port: 80, rule: allow }
+  - { port: 443, rule: allow }
+  - { from_ip: '127.0.0.1/8' }
+ufw_logging: full
+ufw_applications:
+  - { name: "OpenSSH" }
+
+logrotate_scripts:
+  - name: nginx
+    path: /var/log/nginx/*.log
+    options:
+      - weekly
+      - size 25M
+      - rotate 7
+      - missingok
+      - compress
+      - delaycompress
+      - copytruncate
+  - name: syslog
+    path: /var/log/syslog
+    options:
+      - weekly
+      - compress
+      - rotate 7
+      - missingok
+      - copytruncate
+      - delaycompress
