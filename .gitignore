@@ -1,4 +1,5 @@
 credentials/*
 hosts
 staging
+production
 group_vars

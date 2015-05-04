@@ -19,6 +19,7 @@
     - { role: franklinkim.users-oh-my-zsh, tags: ohmyzsh }
     - { role: franklinkim.ufw, tags: ufw }
     - { role: zzet.rbenv, tags: rbenv }
+    - { role: alekseyp.papertrail, tags: papertrail }
 
   tasks:
     - name: fix locales
@@ -47,6 +48,8 @@
         - bison
         - libreadline6
         - libreadline6-dev
+      tags:
+        - apt-packages
 
     - name: ensure bitbucket.org is a known host
       lineinfile:
