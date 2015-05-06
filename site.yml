@@ -68,3 +68,25 @@
       lineinfile: dest=/home/nerdmaster/.zshrc line='eval "$(rbenv init -)"' state=present insertafter=EOF create=yes
       tags:
         - rbenv-init
+
+    - name: Move unicorn init.d config script
+      template: src=templates/unicorn_eunerd.j2 dest=/etc/init.d/unicorn_eunerd mode="a+rx"
+      tags:
+        - initd_unicorn
+
+    - name: Add unicorn startup on update.rc
+      shell: >
+        update-rc.d -f unicorn_eunerd defaults
+      tags:
+        - initd_unicorn
+
+    - name: Move sidekiq init.d config script
+      template: src=templates/sidekiq_eunerd.j2 dest=/etc/init.d/sidekiq_eunerd mode="a+rx"
+      tags:
+        - initd_sidekiq
+
+    - name: Add sidekiq startup on update.rc
+      shell: >
+        update-rc.d -f sidekiq_eunerd defaults
+      tags:
+        - initd_sidekiq
