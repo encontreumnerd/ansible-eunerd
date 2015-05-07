@@ -48,6 +48,7 @@
         - bison
         - libreadline6
         - libreadline6-dev
+        - python-passlib
       tags:
         - apt-packages
 
@@ -90,3 +91,8 @@
         update-rc.d -f sidekiq_eunerd defaults
       tags:
         - initd_sidekiq
+
+    - name: Generate htpasswd file for nginx
+      htpasswd: path=/etc/htpasswd/encontreumnerd name=eunerd password=eunerd owner=root group=www-data mode=0640
+      tags:
+        - htpasswd
