@@ -52,3 +52,17 @@ logrotate_scripts:
       - missingok
       - copytruncate
       - delaycompress
+  - name: ufw
+    path: /var/log/ufw.log
+    options:
+      - rotate 4
+      - weekly
+      - missingok
+      - notifempty
+      - compress
+      - delaycompress
+      - sharedscripts
+      - postrotate:
+        - invoke-rc.d rsyslog reload >/dev/null 2>&1 || true
+      - endscript
+  tags: logrotate
