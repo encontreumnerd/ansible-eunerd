@@ -2,6 +2,12 @@
 
 These are our infrastructure tasks and roles for provision our Rails apps using __nginx + unicorn__.
 
+# TODO
+
+  * [ ] https://github.com/dcarley/rbenv-sudo
+  * [ ] export RAILS_ENV
+
+
 ## How to use
 
   * Fork this repository

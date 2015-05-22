@@ -71,28 +71,53 @@
         - rbenv-init
 
     - name: Move unicorn init.d config script
-      template: src=templates/unicorn_eunerd.j2 dest=/etc/init.d/unicorn_eunerd mode="a+rx"
+      template: src=templates/unicorn_eunerd.j2 dest=/etc/init.d/unicorn mode="a+rx"
       tags:
         - initd_unicorn
 
     - name: Add unicorn startup on update.rc
       shell: >
-        update-rc.d -f unicorn_eunerd defaults
+        update-rc.d -f unicorn defaults
       tags:
         - initd_unicorn
 
     - name: Move sidekiq init.d config script
-      template: src=templates/sidekiq_eunerd.j2 dest=/etc/init.d/sidekiq_eunerd mode="a+rx"
+      template: src=templates/sidekiq_eunerd.j2 dest=/etc/init/sidekiq.conf mode="a+rx"
       tags:
         - initd_sidekiq
 
-    - name: Add sidekiq startup on update.rc
-      shell: >
-        update-rc.d -f sidekiq_eunerd defaults
-      tags:
-        - initd_sidekiq
+    # - name: Add sidekiq on /etc/init/startup on update.rc
+    #   shell: >
+    #     update-rc.d -f sidekiq defaults
+    #   tags:
+    #     - initd_sidekiq
 
     - name: Generate htpasswd file for nginx
       htpasswd: path=/etc/htpasswd/encontreumnerd name=eunerd password=eunerd owner=root group=www-data mode=0640
       tags:
         - htpasswd
+
+    - name: create the file to be used for swap
+      command: fallocate -l 1G /mnt/1GB.swap
+      tags:
+        - swap
+
+    - name: format the file for swap
+      command: mkswap /mnt/1GB.swap
+      tags:
+        - swap
+
+    - name: change swap file permissions
+      file: path=/mnt/1GB.swap owner=root group=root mode=0600
+      tags:
+        - swap
+
+    - name: add the file to the system as a swap file
+      command: swapon /mnt/1GB.swap
+      tags:
+        - swap
+
+    - name: write swap entry in fstab
+      mount: name=none src=/mnt/1GB.swap fstype=swap opts=sw passno=0 dump=0 state=present
+      tags:
+        - swap
